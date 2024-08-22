@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="KGW_JAVA_MISSION:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/KGW_JAVA_MISSION_jar</output-path>
+    <root id="archive" name="KGW_JAVA_MISSION.jar">
+      <element id="module-output" name="KGW_JAVA_MISSION" />
+    </root>
+  </artifact>
+</component>
