@@ -33,7 +33,7 @@ public class MenuManager {
         menu = new Menu(students);
 
         while(true){
-            menu.Show_Manu(); // 전체 메뉴를 보여준다
+            menu.showMenu(); // 전체 메뉴를 보여준다
             int num = 0; //메뉴 번호 변수
             //메뉴번호변수 1~5숫자제외 특수문자등 모두 예외처리
             try {
@@ -47,19 +47,19 @@ public class MenuManager {
             //각 번호 입력시 메뉴에 맞는 기능으로 연결 6번은 예외처리, 5번은 프로그램 종료
             switch(num){
                 case 1:
-                    menu.StudentAdder(scanner);
+                    menu.studentAdder(scanner);
                     break;
                 case 2:
-                    menu.ShowStudents();
+                    menu.showStudents();
                     break;
                 case 3:
-                    menu.SearchStudents(scanner);
+                    menu.searchStudents(scanner);
                     break;
                 case 4:
-                    menu.StudentUpdater(scanner);
+                    menu.studentUpdater(scanner);
                     break;
                 case 5:
-                    if(menu.SystemExit(scanner)){
+                    if(menu.systemExit(scanner)){
                         scanner.close();
                         System.out.println("[프로그램을 종료합니다.]");
                         System.exit(0);

@@ -23,7 +23,7 @@ public class Student {
 
 
     //입력한 값과 학생id가 같은지 확인
-    public boolean CheckID(int studentId){
+    public boolean checkID(int studentId){
         return this.studentId == studentId;
     }
 
