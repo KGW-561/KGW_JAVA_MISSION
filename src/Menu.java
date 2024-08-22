@@ -23,7 +23,7 @@ public class Menu {
     }
 
     //학생 등록 메뉴 ,Student객체를 초기화 하는 함수
-    public void studentAdder(Scanner scanner){
+    public void registerStudent(Scanner scanner){
         //Student 변수에 대입할 변수 선언;
         String studentName;
         int studentId;
@@ -73,14 +73,17 @@ public class Menu {
                 //첫글자 0,특수문자, 공백을 검사하기위해 idTemp에 string타입으로 받음
                 String idTemp = scanner.nextLine();
                 //String입력 받을 때 오류 검사 메서드 호출
-                if (!studentIdValidator(idTemp)) {
+
+                if (!validateInputStudentId(idTemp)) {
                     continue;
                 }
 
                 //공백제거후 int형으로 변환하여 id저장
                 studentId = Integer.parseInt(idTemp.replaceAll("\\s+", ""));
+
+
                 //중복 studentId검사
-                if(studentDuplicateChecker(studentId)){
+                if(isDuplicateStudentId(studentId)){
                     System.out.println("[동일한 학번입니다. 다시 입력하세요.]");
                     continue;
                 }
@@ -88,16 +91,13 @@ public class Menu {
                     System.out.println("양수만 가능합니다.");
                     continue;
                 }
-                //8자리초과등 다른 예외를 검사
-                if(studentIdValidator(studentId)) {
+                //8자리 검사
+                if(validateInputStudentId(studentId)) {
                     break;
                 }
 
-            } catch (InputMismatchException e) {
-                System.out.println("['정수형타입으로 입력해주세요.]");
-
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
+            }catch (NumberFormatException e) {
+                System.out.println("[정수형타입으로 입력해주세요.]");
             }
         }
         return studentId;
@@ -115,10 +115,9 @@ public class Menu {
                 studentName = scanner.nextLine().replaceAll("\\s+", "");
                 //0~10글자 크기 처리
                 if (studentName.isEmpty() || studentName.length() > 10) {
-                    System.out.println("[이름은 0~10글자로 작성해주세요.]");
+                    System.out.println("[이름은 1~10글자로 작성해주세요.]");
                     continue;
                 }
-
                 //입력된 문자열에 한글 외의 문자가 포함되었나 검사
                 if (studentName.matches("^[가-힣]+$")) {
                     break;//한글만일 시 반복문 탈출
@@ -126,10 +125,8 @@ public class Menu {
                     System.out.println("한글로만 작성해주세요.");
                     continue;
                 }
-            }catch (InputMismatchException e) {
+            }catch (NumberFormatException e) {
                 System.out.println("[문자열타입으로 입력해주세요.]");
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
             }
         }
         return studentName;
@@ -154,10 +151,8 @@ public class Menu {
                     System.out.println("한글로만 작성해주세요.");
                     continue;
                 }
-            }catch (InputMismatchException e) {
+            }catch (NumberFormatException e) {
                 System.out.println("[문자열타입으로 입력해주세요.]");
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
             }
         }
         return department;
@@ -175,7 +170,7 @@ public class Menu {
                 phoneNumber = scanner.nextLine().replaceAll("\\s+", "");
 
                 if (!phoneNumber.startsWith("010-")){
-                    System.out.println("010으로 시작해 주세요");
+                    System.out.println("010-으로 시작해 주세요");
                     continue;
                 }
                 if (!phoneNumber.matches(regex)) {
@@ -183,17 +178,15 @@ public class Menu {
                     continue; // 유효하지 않는 입력이면 continue
                 }
                 break;
-            }catch (InputMismatchException e) {
+            }catch (NumberFormatException e) {
                 System.out.println("[문자열타입으로 입력해주세요. 입력 양식은 000-0000-0000 입니다.]");
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
             }
         }
         return phoneNumber;
     }
 
     //중복 studentId검사
-    public boolean studentDuplicateChecker(int studentId){
+    public boolean isDuplicateStudentId(int studentId){
 
         //모든 배열 검사
         for (int i = 0; i < students.length; i++) {
@@ -208,23 +201,17 @@ public class Menu {
     }
 
     //Id값이 String일때 예외처리
-    public boolean studentIdValidator(String studentId){
+    public boolean validateInputStudentId(String studentId){
         //처음숫자가 0인경우
         if (studentId.startsWith("0")) {
             System.out.println("[0으로 시작할 수 없습니다.]");
             return false;
-        }
-        //문자중에 숫자를 제외하고 포함되는지 검사
-        if(studentId.matches("\\d+")) {
-            return true;
-        }else{
-            System.out.println("[정수만 입력하세요.]");
-            return false;
-        }
+        }else return true;
+
     }
 
     //Id값이 int형일시 예외처리
-    public boolean studentIdValidator(int studentId){
+    public boolean validateInputStudentId(int studentId){
         //8자리검사 (7자리나 9자리이상은 false)
         if (studentId > 99999999 || studentId < 10000000) {
                     System.out.println("[8자리 숫자로 입력해주세요.]");
@@ -234,7 +221,7 @@ public class Menu {
     }
 
     //중복 검사 후 중복된 Student객체를 반환
-    public Student studentFinder(int studentId){
+    public Student retrieveStudent(int studentId){
         for (Student student : students) {
             if(student == null) {
                 return null; //널값이면 false
@@ -272,28 +259,33 @@ public class Menu {
             try {
                 System.out.println("[학생을 조회 합니다.]");
                 System.out.print("학번을 입력하십시오. : ");
-                //첫글자 0,특수문자를 검사하기위해 idTemp에 string타입으로 받음
+                //첫글자 0,특수문자, 공백을 검사하기위해 idTemp에 string타입으로 받음
                 String idTemp = scanner.nextLine();
-                if (!studentIdValidator(idTemp)) {
+                //String입력 받을 때 오류 검사 메서드 호출
+
+                if (!validateInputStudentId(idTemp)) {
                     continue;
                 }
                 //공백제거후 int형으로 변환하여 id저장
                 studentId = Integer.parseInt(idTemp.replaceAll("\\s+", ""));
-                //8자리초과등 다른 예외를 검사
-                if(studentIdValidator(studentId)) {
+
+                if(studentId < 0){
+                    System.out.println("양수만 가능합니다.");
+                    continue;
+                }
+                //8자리 검사
+                if(validateInputStudentId(studentId)) {
                     break;
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("['숫자'로 입력해주세요.]");
 
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
+            }catch (NumberFormatException e) {
+                System.out.println("[정수형타입으로 입력해주세요.]");
             }
         }
 
         //중복된 studentId가 있으면 그 student를 출력한다.
-        if(studentDuplicateChecker(studentId)){
-            showStudent(studentFinder(studentId));
+        if(isDuplicateStudentId(studentId)){
+            showStudent(retrieveStudent(studentId));
         }
         else{ // 없으면 메시지 출력
             System.out.println("일치하는 학번이 없습니다.");
@@ -301,7 +293,7 @@ public class Menu {
     }
 
     //학번으로 학생 정보 과목,전화번호 수정
-    public void studentUpdater(Scanner scanner){
+    public void updateStudent(Scanner scanner){
         //입력 받을 학번
         int studentId;
         //학번 예외처리
@@ -309,34 +301,41 @@ public class Menu {
             try {
                 System.out.println("[학생 정보를 수정합니다.]");
                 System.out.print("학번을 입력하십시오. : ");
-                //첫글자 0을 검사하기위해 임시로 string타입으로 받음
+                //첫글자 0,특수문자, 공백을 검사하기위해 idTemp에 string타입으로 받음
                 String idTemp = scanner.nextLine();
-                if (!studentIdValidator(idTemp)) {
+                //String입력 받을 때 오류 검사 메서드 호출
+
+                if (!validateInputStudentId(idTemp)) {
                     continue;
                 }
                 //공백제거후 int형으로 변환하여 id저장
                 studentId = Integer.parseInt(idTemp.replaceAll("\\s+", ""));
-                //8자리초과등 다른 예외를 검사
-                if(studentIdValidator(studentId)) {
+
+                if(studentId < 0){
+                    System.out.println("양수만 가능합니다.");
+                    continue;
+                }
+                //8자리 검사
+                if(validateInputStudentId(studentId)) {
                     break;
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("['숫자'로 입력해주세요.]");
 
-            }catch (RuntimeException e) {
-                System.out.println("[An unexpected error occurred: " + e.getMessage()+"]");
+            }catch (NumberFormatException e) {
+                System.out.println("[정수형타입으로 입력해주세요.]");
             }
         }
 
+
+
         //일치하는 학번이 없을 시 출력
-        if(!studentDuplicateChecker(studentId)){
+        if(!isDuplicateStudentId(studentId)){
             System.out.println("일치하는 학번이 없습니다.");
             return;
         }
 
         //일치하는 학번이 있으면 학번 이름을 출력하고 학과,전화번호를 다시 입력한다.
-        if(studentDuplicateChecker(studentId)){
-            Student student = studentFinder(studentId);
+        if(isDuplicateStudentId(studentId)){
+            Student student = retrieveStudent(studentId);
             System.out.println("학  번:"+student.getStudentId());
             System.out.println("이  름:"+student.getStudentName());
             student.setDepartment(addDepartment(scanner));
@@ -345,8 +344,8 @@ public class Menu {
         }
     }
 
-    //프로그램 종료 함수 y,n구별
-    public boolean systemExit(Scanner scanner) {
+    //프로그램 종료 함수 y,n 대소문자 구별
+    public boolean displayExitMenu(Scanner scanner) {
         //입력받을 변수
         String answer;
         System.out.println("프로그램을 종료하시겠습니까?(y/n)");

@@ -1,4 +1,3 @@
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MenuManager {
@@ -12,21 +11,21 @@ public class MenuManager {
             try {
                 System.out.print("학생 수 입력: ");
                 totalStudents = Integer.parseInt(scanner.nextLine());
-                if(totalStudents <0){
-                    System.out.println("음수는 입력 불가합니다.");
-                    continue;
+
+                if (totalStudents <= 0) {
+                    throw new IllegalArgumentException("양의 정수를 입력해야 합니다.");
                 }
                 break;
-            } catch (InputMismatchException e) {
-                System.out.println("숫자를 입력해 주세요");
-            }catch (RuntimeException e) {
-                // 모든 RuntimeException 처리
-                System.out.println("An unexpected error occurred: " + e.getMessage());
+            //정수형이 아닐시
+            }catch (NumberFormatException e) {
+                System.out.println("1이상의 정수형을 입력해 주세요.");
+            }catch (IllegalArgumentException e) {
+                System.out.println("1이상의 정수형을 입력해 주세요.");
             }
         }
 
 
-        //학생객체를 students배열에 선언 생성자x
+        //학생객체를 students배열에 선언, 생성자x
         Student[] students = new Student[totalStudents];
 
         //menu클래스에 생성자선언하면서 menu클래스 안에 있는 students배열객체를 선언해준다.
@@ -38,16 +37,16 @@ public class MenuManager {
             //메뉴번호변수 1~5숫자제외 특수문자등 모두 예외처리
             try {
                 num = Integer.parseInt(scanner.nextLine());
-            }catch (RuntimeException e) { //InputMismatchException은 밑에 switch문에서 default값으로 처리
-                // 모든 RuntimeException 처리
-                System.out.println("An unexpected error occurred: " + e.getMessage());
+            }catch(NumberFormatException e) {
+                System.out.println("1이상의 정수형을 입력해 주세요");
+                continue;
             }
             System.out.println("----------------------");
 
             //각 번호 입력시 메뉴에 맞는 기능으로 연결 6번은 예외처리, 5번은 프로그램 종료
             switch(num){
                 case 1:
-                    menu.studentAdder(scanner);
+                    menu.registerStudent(scanner);
                     break;
                 case 2:
                     menu.showStudents();
@@ -56,10 +55,10 @@ public class MenuManager {
                     menu.searchStudents(scanner);
                     break;
                 case 4:
-                    menu.studentUpdater(scanner);
+                    menu.updateStudent(scanner);
                     break;
                 case 5:
-                    if(menu.systemExit(scanner)){
+                    if(menu.displayExitMenu(scanner)){
                         scanner.close();
                         System.out.println("[프로그램을 종료합니다.]");
                         System.exit(0);
